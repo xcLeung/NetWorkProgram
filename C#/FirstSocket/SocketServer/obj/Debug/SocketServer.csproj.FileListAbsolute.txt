@@ -1,0 +1,5 @@
+F:\网络编程\FirstSocket\SocketServer\bin\Debug\SocketServer.exe.config
+F:\网络编程\FirstSocket\SocketServer\bin\Debug\SocketServer.exe
+F:\网络编程\FirstSocket\SocketServer\bin\Debug\SocketServer.pdb
+F:\网络编程\FirstSocket\SocketServer\obj\Debug\SocketServer.exe
+F:\网络编程\FirstSocket\SocketServer\obj\Debug\SocketServer.pdb

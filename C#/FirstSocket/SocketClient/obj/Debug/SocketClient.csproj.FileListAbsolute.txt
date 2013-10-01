@@ -1,0 +1,6 @@
+F:\网络编程\FirstSocket\SocketClient\bin\Debug\SocketClient.exe.config
+F:\网络编程\FirstSocket\SocketClient\bin\Debug\SocketClient.exe
+F:\网络编程\FirstSocket\SocketClient\bin\Debug\SocketClient.pdb
+F:\网络编程\FirstSocket\SocketClient\obj\Debug\SocketClient.csprojResolveAssemblyReference.cache
+F:\网络编程\FirstSocket\SocketClient\obj\Debug\SocketClient.exe
+F:\网络编程\FirstSocket\SocketClient\obj\Debug\SocketClient.pdb
