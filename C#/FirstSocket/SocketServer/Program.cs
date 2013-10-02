@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -35,12 +36,19 @@ namespace SocketServer
             while (true)
             {
                 Socket clientSocket = serverSocket.Accept();
-                clientSocket.Send(Encoding.ASCII.GetBytes("Server say hello!"));
-                Thread reciveThread = new Thread(ReceiveMessage);
+               // clientSocket.Send(Encoding.ASCII.GetBytes("Server say hello!"));
+                Thread reciveThread = new Thread(ReceiveMessage);  //接收信息线程
                 reciveThread.Start(clientSocket);
+
+                Thread sendThread = new Thread(sendMessage);
+                sendThread.Start(clientSocket);  //发送信息线程
             }
         }
 
+        /// <summary>
+        /// 接收客户机信息
+        /// </summary>
+        /// <param name="clientSocket"></param>
         private static void ReceiveMessage(Object clientSocket)
         {
             Socket myClientSocket = (Socket)clientSocket;
@@ -51,6 +59,33 @@ namespace SocketServer
                     int receiveNumber = myClientSocket.Receive(result);
                     Console.WriteLine("接收客户端{0}消息{1}",myClientSocket.RemoteEndPoint.ToString(),Encoding.ASCII.GetString(result,0,receiveNumber));
 
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    myClientSocket.Shutdown(SocketShutdown.Both);
+                    myClientSocket.Close();
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 向客户机发送信息
+        /// </summary>
+        /// <param name="clientSocket"></param>
+        private static void sendMessage(Object clientSocket)
+        {
+            Socket myClientSocket = (Socket)clientSocket;
+            NetworkStream stream = new NetworkStream(myClientSocket);
+            StreamWriter sw = new StreamWriter(stream);
+            while (true)
+            {
+                try
+                {
+                    Console.WriteLine("向客户端{0}发送信息：", myClientSocket.RemoteEndPoint.ToString());
+                    String msg = Console.ReadLine();
+                    myClientSocket.Send(Encoding.ASCII.GetBytes(msg));
                 }
                 catch(Exception ex)
                 {

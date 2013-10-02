@@ -3,3 +3,8 @@ F:\网络编程\FirstSocket\SocketServer\bin\Debug\SocketServer.exe
 F:\网络编程\FirstSocket\SocketServer\bin\Debug\SocketServer.pdb
 F:\网络编程\FirstSocket\SocketServer\obj\Debug\SocketServer.exe
 F:\网络编程\FirstSocket\SocketServer\obj\Debug\SocketServer.pdb
+F:\GitHub\workplace\NetWorkProgram\C#\FirstSocket\SocketServer\bin\Debug\SocketServer.exe.config
+F:\GitHub\workplace\NetWorkProgram\C#\FirstSocket\SocketServer\obj\Debug\SocketServer.exe
+F:\GitHub\workplace\NetWorkProgram\C#\FirstSocket\SocketServer\obj\Debug\SocketServer.pdb
+F:\GitHub\workplace\NetWorkProgram\C#\FirstSocket\SocketServer\bin\Debug\SocketServer.exe
+F:\GitHub\workplace\NetWorkProgram\C#\FirstSocket\SocketServer\bin\Debug\SocketServer.pdb
