@@ -31,11 +31,27 @@ namespace SocketClient
                 Console.WriteLine("连接服务器失败，请按回车键退出");
                 return;
             }
+
+            Thread sendThread = new Thread(sendMessage); // 发送信息线程
+            sendThread.Start(clientSocket);
+
             while (true)
             {
-                int receiveLength = clientSocket.Receive(result);
-                Console.WriteLine("接收服务器消息：{0}", Encoding.ASCII.GetString(result, 0, receiveLength));
+                try
+                {
+                    int receiveLength = clientSocket.Receive(result);
+                    Console.WriteLine("接收服务器消息：{0}：", Encoding.ASCII.GetString(result, 0, receiveLength));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    clientSocket.Shutdown(SocketShutdown.Both);
+                    clientSocket.Close();
+                    break;
+                }
             }
+
+            
             //for (int i = 0; i < 10; i++)
             //{
             //    try
@@ -54,6 +70,27 @@ namespace SocketClient
             //}
             //Console.WriteLine("发送完毕，按回车键退出键");
            // Console.ReadLine();
+        }
+
+        private static void sendMessage(Object clientSocket)
+        {
+            Socket myClientSocket = (Socket)clientSocket;
+            while (true)
+            {
+                try
+                {
+                    Console.WriteLine("向服务器{0}发送信息：", myClientSocket.RemoteEndPoint.ToString());
+                    String msg = Console.ReadLine();
+                    myClientSocket.Send(Encoding.ASCII.GetBytes(msg));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    myClientSocket.Shutdown(SocketShutdown.Both);
+                    myClientSocket.Close();
+                    break;
+                }
+            }
         }
     }
 }

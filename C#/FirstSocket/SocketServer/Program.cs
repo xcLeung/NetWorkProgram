@@ -28,7 +28,7 @@ namespace SocketServer
 
             Thread myThread = new Thread(ListenClientConnect);  //监听线程
             myThread.Start();
-            Console.ReadLine();
+         //   Console.ReadLine();
         }
 
         private static void ListenClientConnect()
@@ -40,8 +40,8 @@ namespace SocketServer
                 Thread reciveThread = new Thread(ReceiveMessage);  //接收信息线程
                 reciveThread.Start(clientSocket);
 
-                Thread sendThread = new Thread(sendMessage);
-                sendThread.Start(clientSocket);  //发送信息线程
+                Thread sendThread = new Thread(sendMessage); //发送信息线程
+                sendThread.Start(clientSocket); 
             }
         }
 
@@ -57,7 +57,7 @@ namespace SocketServer
                 try
                 {
                     int receiveNumber = myClientSocket.Receive(result);
-                    Console.WriteLine("接收客户端{0}消息{1}",myClientSocket.RemoteEndPoint.ToString(),Encoding.ASCII.GetString(result,0,receiveNumber));
+                    Console.WriteLine("接收客户端{0}消息{1}：",myClientSocket.RemoteEndPoint.ToString(),Encoding.ASCII.GetString(result,0,receiveNumber));
 
                 }
                 catch(Exception ex)
@@ -77,8 +77,6 @@ namespace SocketServer
         private static void sendMessage(Object clientSocket)
         {
             Socket myClientSocket = (Socket)clientSocket;
-            NetworkStream stream = new NetworkStream(myClientSocket);
-            StreamWriter sw = new StreamWriter(stream);
             while (true)
             {
                 try
