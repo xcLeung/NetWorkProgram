@@ -32,12 +32,12 @@
             this.textBoxUserName = new System.Windows.Forms.TextBox();
             this.btnLogin = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.textBoxMessage = new System.Windows.Forms.TextBox();
-            this.btnSend = new System.Windows.Forms.Button();
-            this.listBoxOnlineStatus = new System.Windows.Forms.ListBox();
             this.richTextBoxTalkInfo = new System.Windows.Forms.RichTextBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnSend = new System.Windows.Forms.Button();
+            this.textBoxMessage = new System.Windows.Forms.TextBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.listBoxOnlineStatus = new System.Windows.Forms.ListBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -67,6 +67,7 @@
             this.btnLogin.TabIndex = 2;
             this.btnLogin.Text = "登录";
             this.btnLogin.UseVisualStyleBackColor = true;
+            this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
             // 
             // groupBox1
             // 
@@ -77,6 +78,14 @@
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "对话信息";
+            // 
+            // richTextBoxTalkInfo
+            // 
+            this.richTextBoxTalkInfo.Location = new System.Drawing.Point(7, 21);
+            this.richTextBoxTalkInfo.Name = "richTextBoxTalkInfo";
+            this.richTextBoxTalkInfo.Size = new System.Drawing.Size(419, 117);
+            this.richTextBoxTalkInfo.TabIndex = 0;
+            this.richTextBoxTalkInfo.Text = "";
             // 
             // groupBox2
             // 
@@ -89,6 +98,24 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "发送信息";
             // 
+            // btnSend
+            // 
+            this.btnSend.Location = new System.Drawing.Point(343, 84);
+            this.btnSend.Name = "btnSend";
+            this.btnSend.Size = new System.Drawing.Size(75, 23);
+            this.btnSend.TabIndex = 1;
+            this.btnSend.Text = "发送";
+            this.btnSend.UseVisualStyleBackColor = true;
+            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
+            // 
+            // textBoxMessage
+            // 
+            this.textBoxMessage.Location = new System.Drawing.Point(7, 21);
+            this.textBoxMessage.Multiline = true;
+            this.textBoxMessage.Name = "textBoxMessage";
+            this.textBoxMessage.Size = new System.Drawing.Size(330, 86);
+            this.textBoxMessage.TabIndex = 0;
+            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.listBoxOnlineStatus);
@@ -99,23 +126,6 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "当前在线";
             // 
-            // textBoxMessage
-            // 
-            this.textBoxMessage.Location = new System.Drawing.Point(7, 21);
-            this.textBoxMessage.Multiline = true;
-            this.textBoxMessage.Name = "textBoxMessage";
-            this.textBoxMessage.Size = new System.Drawing.Size(330, 86);
-            this.textBoxMessage.TabIndex = 0;
-            // 
-            // btnSend
-            // 
-            this.btnSend.Location = new System.Drawing.Point(343, 84);
-            this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(75, 23);
-            this.btnSend.TabIndex = 1;
-            this.btnSend.Text = "发送";
-            this.btnSend.UseVisualStyleBackColor = true;
-            // 
             // listBoxOnlineStatus
             // 
             this.listBoxOnlineStatus.FormattingEnabled = true;
@@ -124,14 +134,6 @@
             this.listBoxOnlineStatus.Name = "listBoxOnlineStatus";
             this.listBoxOnlineStatus.Size = new System.Drawing.Size(188, 280);
             this.listBoxOnlineStatus.TabIndex = 0;
-            // 
-            // richTextBoxTalkInfo
-            // 
-            this.richTextBoxTalkInfo.Location = new System.Drawing.Point(7, 21);
-            this.richTextBoxTalkInfo.Name = "richTextBoxTalkInfo";
-            this.richTextBoxTalkInfo.Size = new System.Drawing.Size(419, 117);
-            this.richTextBoxTalkInfo.TabIndex = 0;
-            this.richTextBoxTalkInfo.Text = "";
             // 
             // ClientForm
             // 
@@ -146,6 +148,7 @@
             this.Controls.Add(this.label1);
             this.Name = "ClientForm";
             this.Text = "ClientChatForm";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ClientForm_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();

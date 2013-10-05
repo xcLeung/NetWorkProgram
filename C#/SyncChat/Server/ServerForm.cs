@@ -47,6 +47,19 @@ namespace Server
         /// <param name="e"></param>
         private void btnStartListen_Click(object sender, EventArgs e)
         {
+            myListener = new TcpListener(localAddress, port);
+            myListener.Start();
+            AddItemToListBox(String.Format("开始在{0}：{1}监听客户端连接", localAddress, port));
+            Thread myThread = new Thread(listenClientConnect);
+            myThread.Start();
+            btnStartListen.Enabled = false;
+            btnCancelListen.Enabled = true;
+
+        }
+
+
+        private void listenClientConnect()
+        {
             TcpClient newClient = null;
             while (true)
             {
@@ -59,12 +72,12 @@ namespace Server
                     break;
                 }
                 User user = new User(newClient);
-                userList.Add(user);
                 Thread threadReceive = new Thread(ReceiveData);
                 threadReceive.Start(user);
-                
+                userList.Add(user);
+                AddItemToListBox(String.Format("[{0}]进入", newClient.Client.RemoteEndPoint));
+                AddItemToListBox(String.Format("当前连接用户数：{0}", userList.Count));
             }
-
         }
 
         private void ReceiveData(object userState)
@@ -204,7 +217,7 @@ namespace Server
             AddItemToListBox("停止服务端服务，并依次退出用户");
             isNormalExit = true;
             //逆序删除，不用移位
-            for (int i = userList.Count; i >= 0; i--)
+            for (int i = userList.Count-1; i >= 0; i--)
             {
                 RemoveUser(userList[i]);
             }

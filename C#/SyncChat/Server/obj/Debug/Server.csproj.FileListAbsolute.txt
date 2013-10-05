@@ -1,1 +1,8 @@
 F:\GitHub\workplace\NetWorkProgram\C#\SyncChat\Server\bin\Debug\Server.exe.config
+F:\GitHub\workplace\NetWorkProgram\C#\SyncChat\Server\bin\Debug\Server.exe
+F:\GitHub\workplace\NetWorkProgram\C#\SyncChat\Server\bin\Debug\Server.pdb
+F:\GitHub\workplace\NetWorkProgram\C#\SyncChat\Server\obj\Debug\Server.Properties.Resources.resources
+F:\GitHub\workplace\NetWorkProgram\C#\SyncChat\Server\obj\Debug\Server.ServerForm.resources
+F:\GitHub\workplace\NetWorkProgram\C#\SyncChat\Server\obj\Debug\Server.csproj.GenerateResource.Cache
+F:\GitHub\workplace\NetWorkProgram\C#\SyncChat\Server\obj\Debug\Server.exe
+F:\GitHub\workplace\NetWorkProgram\C#\SyncChat\Server\obj\Debug\Server.pdb
