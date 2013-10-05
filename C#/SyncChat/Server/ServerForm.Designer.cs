@@ -72,6 +72,7 @@
             this.btnCancelListen.TabIndex = 2;
             this.btnCancelListen.Text = "取消监听";
             this.btnCancelListen.UseVisualStyleBackColor = true;
+            this.btnCancelListen.Click += new System.EventHandler(this.btnCancelListen_Click);
             // 
             // ServerForm
             // 
@@ -83,6 +84,7 @@
             this.Controls.Add(this.groupBox1);
             this.Name = "ServerForm";
             this.Text = "ServerChatForm";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ServerForm_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 

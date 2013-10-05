@@ -88,6 +88,76 @@ namespace Server
                     }
                     break;
                 }
+                AddItemToListBox(String.Format("来自[{0}]：{1}", user.client.Client.RemoteEndPoint.ToString(), receiveString));
+                String[] splitString = receiveString.Split(',');
+                switch (splitString[0])
+                {
+                    case "Login":
+                        user.userName = splitString[1];
+                        sendToAllClient(user, receiveString);
+                        break;
+                    case "Logout":
+                        sendToAllClient(user, receiveString);
+                        userList.Remove(user);
+                        break;
+                    case "Talk":
+                        String talkString = receiveString.Substring(splitString[0].Length + splitString[1].Length + 2); //指令格式 command,username,message
+                        AddItemToListBox(String.Format("{0}对{1}说：{2}",user.userName,splitString[1],talkString));
+                        sendToClient(user, "talk," + user.userName + "," + talkString);
+                        foreach (User target in userList)
+                        {
+                            if (target.userName == splitString[1] && splitString[1] != user.userName)
+                            {
+                                sendToClient(target, "talk," +user.userName + "," + talkString);
+                                break;
+                            }
+                        }
+                        break;
+                    default:
+                        AddItemToListBox("无相关指令：" + receiveString);
+                        break;
+                }
+            }
+        }
+
+
+        private void sendToAllClient(User user, String message)
+        {
+            String command = message.Split(',')[0].ToLower();
+            if (command == "login")
+            {
+                for (int i = 0; i < userList.Count; i++)
+                {
+                    sendToClient(userList[i], message);  //将登陆信息发给所有人
+                    if (userList[i].userName != user.userName)
+                    {
+                        sendToClient(user,"login,"+userList[i].userName); //将已登录人信息发给刚登陆的人
+                    }
+                }
+            }
+            else if (command == "logout")
+            {
+                for (int i = 0; i < userList.Count; i++)
+                {
+                    if (userList[i].userName != user.userName)
+                    {
+                        sendToClient(userList[i], message);
+                    }
+                }
+            }
+        }
+
+        private void sendToClient(User user, String message)
+        {
+            try
+            {
+                user.bw.Write(message);
+                user.bw.Flush();  //清空缓冲区，使数据写上传送，而不是等缓冲区满再发送
+                AddItemToListBox(String.Format("向[{0}]发送：{1}", user.userName, message));
+            }
+            catch
+            {
+                AddItemToListBox(String.Format("向[{0}]发送信息失败", user.userName));
             }
         }
 
@@ -122,6 +192,33 @@ namespace Server
             userList.Remove(user);
             user.Close();
             AddItemToListBox(String.Format("当前连接用户数：{0}", userList.Count));
+        }
+
+        /// <summary>
+        /// 取消监听事件处理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnCancelListen_Click(object sender, EventArgs e)
+        {
+            AddItemToListBox("停止服务端服务，并依次退出用户");
+            isNormalExit = true;
+            //逆序删除，不用移位
+            for (int i = userList.Count; i >= 0; i--)
+            {
+                RemoveUser(userList[i]);
+            }
+            myListener.Stop();
+            btnStartListen.Enabled = true;
+            btnCancelListen.Enabled = false;
+        }
+
+        private void ServerForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (myListener != null)
+            {
+                btnCancelListen.PerformClick(); //触发停止监听事件
+            }
         }
     }
 }
