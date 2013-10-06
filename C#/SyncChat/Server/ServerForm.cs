@@ -24,7 +24,7 @@ namespace Server
         /// </summary>
         IPAddress localAddress;
         private const int port = 51888;
-        private TcpListener myListener;
+        private TcpListener myListener;   //监听套接字
         /// <summary>
         /// 是否正常退出所有接受线程
         /// </summary>
@@ -34,7 +34,7 @@ namespace Server
         {
             InitializeComponent();
             listBoxStatus.HorizontalScrollbar = true;
-            IPAddress[] addrIP = Dns.GetHostAddresses(Dns.GetHostName());
+            IPAddress[] addrIP = Dns.GetHostAddresses(Dns.GetHostName());  //系统分配ip地址
             localAddress = addrIP[0];
             btnCancelListen.Enabled = false;
         }
@@ -47,10 +47,10 @@ namespace Server
         /// <param name="e"></param>
         private void btnStartListen_Click(object sender, EventArgs e)
         {
-            myListener = new TcpListener(localAddress, port);
+            myListener = new TcpListener(localAddress, port);   //将套接字跟本机地址和端口进行绑定
             myListener.Start();
-            AddItemToListBox(String.Format("开始在{0}：{1}监听客户端连接", localAddress, port));
-            Thread myThread = new Thread(listenClientConnect);
+            AddItemToListBox(String.Format("开始在{0}：{1}监听客户端连接", localAddress, port));  
+            Thread myThread = new Thread(listenClientConnect);  //开启监听线程，一直监听有没有客户端登录
             myThread.Start();
             btnStartListen.Enabled = false;
             btnCancelListen.Enabled = true;
@@ -61,18 +61,18 @@ namespace Server
         private void listenClientConnect()
         {
             TcpClient newClient = null;
-            while (true)
+            while (true)   //循环监听
             {
                 try
                 {
-                    newClient = myListener.AcceptTcpClient();
+                    newClient = myListener.AcceptTcpClient();   //有客户端接入，新建一个与客户端通信的套接字
                 }
                 catch
                 {
                     break;
                 }
-                User user = new User(newClient);
-                Thread threadReceive = new Thread(ReceiveData);
+                User user = new User(newClient);   
+                Thread threadReceive = new Thread(ReceiveData);  //开启与客户端通信的线程
                 threadReceive.Start(user);
                 userList.Add(user);
                 AddItemToListBox(String.Format("[{0}]进入", newClient.Client.RemoteEndPoint));
@@ -111,18 +111,29 @@ namespace Server
                         break;
                     case "Logout":
                         sendToAllClient(user, receiveString);
-                        userList.Remove(user);
+                        RemoveUser(user);   //移出断开连接的客户端
                         break;
                     case "Talk":
                         String talkString = receiveString.Substring(splitString[0].Length + splitString[1].Length + 2); //指令格式 command,username,message
                         AddItemToListBox(String.Format("{0}对{1}说：{2}",user.userName,splitString[1],talkString));
-                        sendToClient(user, "talk," + user.userName + "," + talkString);
-                        foreach (User target in userList)
+                        //sendToClient(user, "talk," + user.userName + "," + talkString);
+                        foreach (User target in userList)   //寻找目标
                         {
                             if (target.userName == splitString[1] && splitString[1] != user.userName)
                             {
                                 sendToClient(target, "talk," +user.userName + "," + talkString);
                                 break;
+                            }
+                        }
+                        break;
+                    case "All":
+                        String allString = receiveString.Substring(splitString[0].Length + 1);
+                        AddItemToListBox(String.Format("{0}对所有人说：{1}", user.userName, allString));
+                        foreach (User target in userList)
+                        {
+                            if (target.userName != user.userName)
+                            {
+                                sendToClient(target, "talk," + user.userName + "," + allString);
                             }
                         }
                         break;
@@ -141,9 +152,9 @@ namespace Server
             {
                 for (int i = 0; i < userList.Count; i++)
                 {
-                    sendToClient(userList[i], message);  //将登陆信息发给所有人
                     if (userList[i].userName != user.userName)
                     {
+                        sendToClient(userList[i], message); //将登录信息发给所有人
                         sendToClient(user,"login,"+userList[i].userName); //将已登录人信息发给刚登陆的人
                     }
                 }
@@ -174,6 +185,8 @@ namespace Server
             }
         }
 
+
+        #region 维护服务器消息控件
         /// <summary>
         /// 定义委托（夸线程操作C#控件需要定义代理委托操作）
         /// </summary>
@@ -195,7 +208,9 @@ namespace Server
                 listBoxStatus.ClearSelected();
             }
         }
+        #endregion
 
+        #region 用户退出操作
         /// <summary>
         /// 用户退出，更新状态
         /// </summary>
@@ -206,7 +221,9 @@ namespace Server
             user.Close();
             AddItemToListBox(String.Format("当前连接用户数：{0}", userList.Count));
         }
+        #endregion 
 
+        #region 停止监听操作
         /// <summary>
         /// 取消监听事件处理
         /// </summary>
@@ -233,5 +250,6 @@ namespace Server
                 btnCancelListen.PerformClick(); //触发停止监听事件
             }
         }
+        #endregion
     }
 }

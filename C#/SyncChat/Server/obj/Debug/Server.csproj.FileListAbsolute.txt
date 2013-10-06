@@ -6,3 +6,4 @@ F:\GitHub\workplace\NetWorkProgram\C#\SyncChat\Server\obj\Debug\Server.ServerFor
 F:\GitHub\workplace\NetWorkProgram\C#\SyncChat\Server\obj\Debug\Server.csproj.GenerateResource.Cache
 F:\GitHub\workplace\NetWorkProgram\C#\SyncChat\Server\obj\Debug\Server.exe
 F:\GitHub\workplace\NetWorkProgram\C#\SyncChat\Server\obj\Debug\Server.pdb
+F:\GitHub\workplace\NetWorkProgram\C#\SyncChat\Server\obj\Debug\Server.csprojResolveAssemblyReference.cache
