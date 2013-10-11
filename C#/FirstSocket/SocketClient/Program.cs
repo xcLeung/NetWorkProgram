@@ -50,26 +50,6 @@ namespace SocketClient
                     break;
                 }
             }
-
-            
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    try
-            //    {
-            //        Thread.Sleep(1000);
-            //        string sendMessage = "hello i am lxc Client" + DateTime.Now;
-            //        clientSocket.Send(Encoding.ASCII.GetBytes(sendMessage));
-            //        Console.WriteLine("向服务器发送消息：{0}", sendMessage);
-            //    }
-            //    catch
-            //    {
-            //        clientSocket.Shutdown(SocketShutdown.Both);
-            //        clientSocket.Close();
-            //        return;
-            //    }
-            //}
-            //Console.WriteLine("发送完毕，按回车键退出键");
-           // Console.ReadLine();
         }
 
         private static void sendMessage(Object clientSocket)

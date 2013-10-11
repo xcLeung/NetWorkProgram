@@ -81,9 +81,20 @@ namespace SocketServer
             {
                 try
                 {
-                    Console.WriteLine("向客户端{0}发送信息：", myClientSocket.RemoteEndPoint.ToString());
-                    String msg = Console.ReadLine();
-                    myClientSocket.Send(Encoding.ASCII.GetBytes(msg));
+                    if (myClientSocket.Connected)
+                    {
+                        Console.WriteLine("向客户端{0}发送信息：", myClientSocket.RemoteEndPoint.ToString());
+                        String msg = Console.ReadLine();
+                        if (myClientSocket.Connected)
+                        {
+                            myClientSocket.Send(Encoding.ASCII.GetBytes(msg));
+                        }
+                    }
+                    else
+                    {
+                        myClientSocket.Close();
+                        break;
+                    }
                 }
                 catch(Exception ex)
                 {
