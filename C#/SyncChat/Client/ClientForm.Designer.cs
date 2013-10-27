@@ -38,6 +38,7 @@
             this.textBoxMessage = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.listBoxOnlineStatus = new System.Windows.Forms.ListBox();
+            this.btnCC = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -89,6 +90,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.btnCC);
             this.groupBox2.Controls.Add(this.btnSend);
             this.groupBox2.Controls.Add(this.textBoxMessage);
             this.groupBox2.Location = new System.Drawing.Point(12, 198);
@@ -135,6 +137,15 @@
             this.listBoxOnlineStatus.Size = new System.Drawing.Size(188, 280);
             this.listBoxOnlineStatus.TabIndex = 0;
             // 
+            // btnCC
+            // 
+            this.btnCC.Location = new System.Drawing.Point(343, 39);
+            this.btnCC.Name = "btnCC";
+            this.btnCC.Size = new System.Drawing.Size(75, 23);
+            this.btnCC.TabIndex = 2;
+            this.btnCC.Text = "C-C发送";
+            this.btnCC.UseVisualStyleBackColor = true;
+            // 
             // ClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -170,6 +181,7 @@
         private System.Windows.Forms.TextBox textBoxMessage;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.ListBox listBoxOnlineStatus;
+        private System.Windows.Forms.Button btnCC;
     }
 }
 

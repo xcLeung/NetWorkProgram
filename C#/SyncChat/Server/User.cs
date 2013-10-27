@@ -14,6 +14,7 @@ namespace Server
         public BinaryReader br { get; private set; }
         public BinaryWriter bw { get; private set; }
         public String userName { get; set; }
+        public String IPpoint { get; set; }
 
         public User(TcpClient client)
         {

@@ -25,7 +25,7 @@ namespace Server
         {
             InitializeComponent();
             Random r = new Random((int)DateTime.Now.Ticks);
-            textBoxUserName.Text = "user" + r.Next(100, 999);
+            textBoxUserName.Text = "user" + r.Next(100, 999);   //用户名
             listBoxOnlineStatus.HorizontalScrollbar = true;
         }
 
@@ -52,8 +52,9 @@ namespace Server
             NetworkStream networkstream = client.GetStream();  //创建字节流与服务器端交互信息
             br = new BinaryReader(networkstream);
             bw = new BinaryWriter(networkstream);
-            sendMessage("Login," + textBoxUserName.Text);   //将登录信息发送服务器
+            sendMessage("Login," + textBoxUserName.Text+","+client.Client.LocalEndPoint.ToString());   //将登录信息发送服务器
             AddOnline(textBoxUserName.Text);
+
             Thread threadReceive = new Thread(new ThreadStart(receiveData));
             threadReceive.IsBackground = true;
             threadReceive.Start();
@@ -78,10 +79,11 @@ namespace Server
                 }
                 String[] splitString = receiveString.Split(',');
                 String command = splitString[0].ToLower();
+                String IPpoint = splitString[2];
                 switch (command)
                 {
                     case "login":
-                        AddOnline(splitString[1]);
+                        AddOnline(splitString[1]+","+IPpoint);
                         break;
                     case "logout":
                         RemoveUserName(splitString[1]);
