@@ -21,6 +21,9 @@ namespace Server
         private BinaryReader br;
         private BinaryWriter bw;
 
+        private UdpClient receiveUdpClient;
+        private UdpClient sendUdpClient;
+
         public ClientForm()
         {
             InitializeComponent();
@@ -41,6 +44,10 @@ namespace Server
             try
             {
                 client = new TcpClient(Dns.GetHostName(), 51888);    //创建一个绑定服务器IP和端口的套接字
+
+                IPEndPoint iep = client.Client.LocalEndPoint as IPEndPoint;
+                receiveUdpClient = new UdpClient(iep);     //初始化接收udp
+                //AddTalkMessage(receiveUdpClient.Client.LocalEndPoint.ToString());
                 AddTalkMessage("连接成功");
             }
             catch
@@ -58,6 +65,28 @@ namespace Server
             Thread threadReceive = new Thread(new ThreadStart(receiveData));
             threadReceive.IsBackground = true;
             threadReceive.Start();
+
+            Thread threadUdpReceive = new Thread(receiveUdpData);
+            threadUdpReceive.IsBackground = true;
+            threadUdpReceive.Start();
+        }
+
+        private void receiveUdpData()
+        {
+            IPEndPoint remote = new IPEndPoint(IPAddress.Any, 0);   //接收所有远程主机的信息
+            while (true)
+            {
+                try
+                {
+                    byte[] receiveBytes = receiveUdpClient.Receive(ref remote);
+                    String receiveMessage = Encoding.Unicode.GetString(receiveBytes, 0, receiveBytes.Length);
+                    AddTalkMessage(String.Format("[UDP]{0}对你说：{1}", remote, receiveMessage));
+                }
+                catch
+                {
+                    break;
+                }
+            }
         }
 
         private void receiveData()
@@ -138,6 +167,68 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// C-C发送处理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnCC_Click(object sender, EventArgs e)
+        {
+            if (listBoxOnlineStatus.SelectedIndex != -1)
+            {
+                String targetIPpoint = listBoxOnlineStatus.SelectedItem.ToString().Split(',')[1];
+                String ipAddress=String.Empty;
+                int port=0;
+
+                splitIPEndPoint(targetIPpoint,ref ipAddress,ref port);
+                if (port == 0)
+                {
+                    MessageBox.Show("发送失败！");
+                    return;
+                }
+
+              //  try
+               // {
+                    IPAddress address = IPAddress.Parse(ipAddress);
+                    AddTalkMessage("["+address.ToString() + "]:" + port);
+
+                    sendUdpClient = new UdpClient(0);   //初始化udp
+                    byte[] bytes = System.Text.Encoding.Unicode.GetBytes(textBoxMessage.Text);   //转成字节流
+                    IPEndPoint remoteiep = new IPEndPoint(address, port);
+
+                    sendUdpClient.Send(bytes, bytes.Length, remoteiep);
+                    AddTalkMessage(String.Format("[UDP]我说：\n{0}", textBoxMessage.Text));
+             //   }
+              //  catch
+              //  {
+              //      MessageBox.Show("发送失败！");
+              //      return;
+             //   }
+                textBoxMessage.Clear();
+            }
+            else
+            {
+                MessageBox.Show("请先在[当前在线]中选择一个对话者");
+            }
+        }
+
+
+        private void splitIPEndPoint(String target, ref String ipAddress, ref int port)
+        {
+            try
+            {
+                int index = target.LastIndexOf(':');
+                ipAddress = target.Substring(0, index);
+                ipAddress = ipAddress.Substring(1, ipAddress.Length - 2);
+                //MessageBox.Show(target.Substring(index + 1, target.Length - index -1));
+                port = Convert.ToInt32(target.Substring(index + 1, target.Length - index- 1));
+            }
+            catch
+            {
+                MessageBox.Show("远程IP格式不正确！");
+            }
+        }
+
         #region 用户退出
         private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -202,5 +293,7 @@ namespace Server
             }
         }
         #endregion
+
+        
     }
 }

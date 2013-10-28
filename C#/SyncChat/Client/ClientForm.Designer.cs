@@ -123,7 +123,7 @@
             this.groupBox3.Controls.Add(this.listBoxOnlineStatus);
             this.groupBox3.Location = new System.Drawing.Point(450, 13);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(200, 307);
+            this.groupBox3.Size = new System.Drawing.Size(316, 307);
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "当前在线";
@@ -134,7 +134,7 @@
             this.listBoxOnlineStatus.ItemHeight = 12;
             this.listBoxOnlineStatus.Location = new System.Drawing.Point(6, 20);
             this.listBoxOnlineStatus.Name = "listBoxOnlineStatus";
-            this.listBoxOnlineStatus.Size = new System.Drawing.Size(188, 280);
+            this.listBoxOnlineStatus.Size = new System.Drawing.Size(304, 280);
             this.listBoxOnlineStatus.TabIndex = 0;
             // 
             // btnCC
@@ -145,12 +145,13 @@
             this.btnCC.TabIndex = 2;
             this.btnCC.Text = "C-C发送";
             this.btnCC.UseVisualStyleBackColor = true;
+            this.btnCC.Click += new System.EventHandler(this.btnCC_Click);
             // 
             // ClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(675, 332);
+            this.ClientSize = new System.Drawing.Size(776, 332);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);

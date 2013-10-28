@@ -107,7 +107,6 @@ namespace Server
                 {
                     case "Login":
                         user.userName = splitString[1];
-                        user.IPpoint = splitString[2];
                         sendToAllClient(user, receiveString);
                         break;
                     case "Logout":
@@ -149,7 +148,6 @@ namespace Server
         private void sendToAllClient(User user, String message)
         {
             String command = message.Split(',')[0].ToLower();
-            String IPpoint = message.Split(',')[2];
             if (command == "login")
             {
                 for (int i = 0; i < userList.Count; i++)
@@ -157,7 +155,7 @@ namespace Server
                     if (userList[i].userName != user.userName)
                     {
                         sendToClient(userList[i], message); //将登录信息发给所有人
-                        sendToClient(user,"login,"+userList[i].userName+","+IPpoint); //将已登录人信息发给刚登陆的人
+                        sendToClient(user,"login,"+userList[i].userName+","+ userList[i].client.Client.RemoteEndPoint.ToString()); //将已登录人信息发给刚登陆的人
                     }
                 }
             }
