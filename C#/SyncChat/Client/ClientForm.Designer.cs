@@ -34,11 +34,12 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.richTextBoxTalkInfo = new System.Windows.Forms.RichTextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnCC = new System.Windows.Forms.Button();
             this.btnSend = new System.Windows.Forms.Button();
             this.textBoxMessage = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.listBoxOnlineStatus = new System.Windows.Forms.ListBox();
-            this.btnCC = new System.Windows.Forms.Button();
+            this.btnUdpSend = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -90,6 +91,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.btnUdpSend);
             this.groupBox2.Controls.Add(this.btnCC);
             this.groupBox2.Controls.Add(this.btnSend);
             this.groupBox2.Controls.Add(this.textBoxMessage);
@@ -99,6 +101,16 @@
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "发送信息";
+            // 
+            // btnCC
+            // 
+            this.btnCC.Location = new System.Drawing.Point(343, 55);
+            this.btnCC.Name = "btnCC";
+            this.btnCC.Size = new System.Drawing.Size(75, 23);
+            this.btnCC.TabIndex = 2;
+            this.btnCC.Text = "C-Ctcp发送";
+            this.btnCC.UseVisualStyleBackColor = true;
+            this.btnCC.Click += new System.EventHandler(this.btnCC_Click);
             // 
             // btnSend
             // 
@@ -137,15 +149,15 @@
             this.listBoxOnlineStatus.Size = new System.Drawing.Size(304, 280);
             this.listBoxOnlineStatus.TabIndex = 0;
             // 
-            // btnCC
+            // btnUdpSend
             // 
-            this.btnCC.Location = new System.Drawing.Point(343, 39);
-            this.btnCC.Name = "btnCC";
-            this.btnCC.Size = new System.Drawing.Size(75, 23);
-            this.btnCC.TabIndex = 2;
-            this.btnCC.Text = "C-C发送";
-            this.btnCC.UseVisualStyleBackColor = true;
-            this.btnCC.Click += new System.EventHandler(this.btnCC_Click);
+            this.btnUdpSend.Location = new System.Drawing.Point(344, 26);
+            this.btnUdpSend.Name = "btnUdpSend";
+            this.btnUdpSend.Size = new System.Drawing.Size(75, 23);
+            this.btnUdpSend.TabIndex = 3;
+            this.btnUdpSend.Text = "C-Cudp发送";
+            this.btnUdpSend.UseVisualStyleBackColor = true;
+            this.btnUdpSend.Click += new System.EventHandler(this.btnUdpSend_Click);
             // 
             // ClientForm
             // 
@@ -183,6 +195,7 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.ListBox listBoxOnlineStatus;
         private System.Windows.Forms.Button btnCC;
+        private System.Windows.Forms.Button btnUdpSend;
     }
 }
 
