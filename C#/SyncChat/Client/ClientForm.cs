@@ -24,6 +24,11 @@ namespace Server
         private UdpClient receiveUdpClient;
         private UdpClient sendUdpClient;
 
+        private TcpListener myListener;
+        private List<User> userList = new List<User>();
+        private List<User> myClientList = new List<User>();
+        bool isNormalExit = false;
+
         public ClientForm()
         {
             InitializeComponent();
@@ -46,7 +51,13 @@ namespace Server
                 client = new TcpClient(Dns.GetHostName(), 51888);    //创建一个绑定服务器IP和端口的套接字
 
                 IPEndPoint iep = client.Client.LocalEndPoint as IPEndPoint;
-                receiveUdpClient = new UdpClient(iep);     //初始化接收udp
+                myListener = new TcpListener(Dns.GetHostAddresses(Dns.GetHostName())[0], iep.Port);  //初始化监听tcp
+                myListener.Start();
+                Thread threadMyListener = new Thread(listenClientConnect);
+                threadMyListener.IsBackground = true;
+                threadMyListener.Start();
+
+                //receiveUdpClient = new UdpClient(iep);     //初始化接收udp
                 //AddTalkMessage(receiveUdpClient.Client.LocalEndPoint.ToString());
                 AddTalkMessage("连接成功");
             }
@@ -66,28 +77,81 @@ namespace Server
             threadReceive.IsBackground = true;
             threadReceive.Start();
 
-            Thread threadUdpReceive = new Thread(receiveUdpData);
-            threadUdpReceive.IsBackground = true;
-            threadUdpReceive.Start();
+            
         }
 
-        private void receiveUdpData()
+        /// <summary>
+        /// 监听是否有客户接入
+        /// </summary>
+        private void listenClientConnect()
         {
-            IPEndPoint remote = new IPEndPoint(IPAddress.Any, 0);   //接收所有远程主机的信息
-            while (true)
+            TcpClient newClient = null;
+            while (true)   //循环监听
             {
                 try
                 {
-                    byte[] receiveBytes = receiveUdpClient.Receive(ref remote);
-                    String receiveMessage = Encoding.Unicode.GetString(receiveBytes, 0, receiveBytes.Length);
-                    AddTalkMessage(String.Format("[UDP]{0}对你说：{1}", remote, receiveMessage));
+                    newClient = myListener.AcceptTcpClient();   //有客户端接入，新建一个与客户端通信的套接字
+                    //MessageBox.Show("listen："+newClient.Client.RemoteEndPoint.ToString());
                 }
                 catch
                 {
                     break;
                 }
+                User user = new User(newClient);
+                Thread threadReceive = new Thread(receiveTcpData);  //开启与客户端通信的线程
+                threadReceive.Start(user);
+                userList.Add(user);
+            }
+           
+        }
+
+        /// <summary>
+        /// tcp接收数据
+        /// </summary>
+        /// <param name="objUser"></param>
+        private void receiveTcpData(Object objUser)
+        {
+            User user = (User)objUser;
+            TcpClient client = user.client;
+            //MessageBox.Show("test");
+            while (isNormalExit == false)
+            {
+                String receiveString = string.Empty;
+                try
+                {
+                    //消除边界第二种方法，包含字符串长度前缀
+                    receiveString = user.br.ReadString();
+                    AddTalkMessage(String.Format("[{0}]对你说：{1}", client.Client.RemoteEndPoint.ToString(), receiveString));
+                }
+                catch
+                {
+                    if (isNormalExit == false)
+                    {
+                        RemoveUser(user);
+                    }
+                    break;
+                }
             }
         }
+
+
+        //private void receiveUdpData()
+        //{
+        //    IPEndPoint remote = new IPEndPoint(IPAddress.Any, 0);   //接收所有远程主机的信息
+        //    while (true)
+        //    {
+        //        try
+        //        {
+        //            byte[] receiveBytes = receiveUdpClient.Receive(ref remote);
+        //            String receiveMessage = Encoding.Unicode.GetString(receiveBytes, 0, receiveBytes.Length);
+        //            AddTalkMessage(String.Format("[UDP]{0}对你说：{1}", remote, receiveMessage));
+        //        }
+        //        catch
+        //        {
+        //            break;
+        //        }
+        //    }
+        //}
 
         private void receiveData()
         {
@@ -154,7 +218,7 @@ namespace Server
             if (listBoxOnlineStatus.SelectedIndex != -1)
             {
                 sendMessage("Talk," + listBoxOnlineStatus.SelectedItem + "," + textBoxMessage.Text);
-                AddTalkMessage(String.Format("我说：\n{0}", textBoxMessage.Text));
+                AddTalkMessage(String.Format("我说：{0}", textBoxMessage.Text));
                 textBoxMessage.Clear();
             }
             else
@@ -176,10 +240,10 @@ namespace Server
         {
             if (listBoxOnlineStatus.SelectedIndex != -1)
             {
-                String targetIPpoint = listBoxOnlineStatus.SelectedItem.ToString().Split(',')[1];
+                String userName = listBoxOnlineStatus.SelectedItem.ToString().Split(',')[0];
+                String targetIPpoint = listBoxOnlineStatus.SelectedItem.ToString().Split(',')[1];  //取出对方ipendpoint
                 String ipAddress=String.Empty;
                 int port=0;
-
                 splitIPEndPoint(targetIPpoint,ref ipAddress,ref port);
                 if (port == 0)
                 {
@@ -187,23 +251,18 @@ namespace Server
                     return;
                 }
 
-              //  try
-               // {
+
                     IPAddress address = IPAddress.Parse(ipAddress);
-                    AddTalkMessage("["+address.ToString() + "]:" + port);
-
-                    sendUdpClient = new UdpClient(0);   //初始化udp
-                    byte[] bytes = System.Text.Encoding.Unicode.GetBytes(textBoxMessage.Text);   //转成字节流
                     IPEndPoint remoteiep = new IPEndPoint(address, port);
+                    TcpClient newClient = new TcpClient(Dns.GetHostName(),port);
+                   // newClient.Connect(address,port);
+                    User newUserClient = new User(newClient);
+                    myClientList.Add(newUserClient);
 
-                    sendUdpClient.Send(bytes, bytes.Length, remoteiep);
-                    AddTalkMessage(String.Format("[UDP]我说：\n{0}", textBoxMessage.Text));
-             //   }
-              //  catch
-              //  {
-              //      MessageBox.Show("发送失败！");
-              //      return;
-             //   }
+                    AddTalkMessage("[" + address.ToString() + "]:" + port);
+                    sendToClient(newUserClient, textBoxMessage.Text);
+
+                    AddTalkMessage(String.Format("[C-C]我说：{0}", textBoxMessage.Text));
                 textBoxMessage.Clear();
             }
             else
@@ -212,6 +271,18 @@ namespace Server
             }
         }
 
+        private void sendToClient(User user, String message)
+        {
+            try
+            {
+                user.bw.Write(message);
+                user.bw.Flush();  //清空缓冲区，使数据写上传送，而不是等缓冲区满再发送
+            }
+            catch
+            {
+                MessageBox.Show("发送失败！");
+            }
+        }
 
         private void splitIPEndPoint(String target, ref String ipAddress, ref int port)
         {
@@ -222,6 +293,7 @@ namespace Server
                 ipAddress = ipAddress.Substring(1, ipAddress.Length - 2);
                 //MessageBox.Show(target.Substring(index + 1, target.Length - index -1));
                 port = Convert.ToInt32(target.Substring(index + 1, target.Length - index- 1));
+                //MessageBox.Show(port.ToString());
             }
             catch
             {
@@ -229,17 +301,40 @@ namespace Server
             }
         }
 
+
+        //       sendUdpClient = new UdpClient(0);   //初始化udp
+        //       byte[] bytes = System.Text.Encoding.Unicode.GetBytes(textBoxMessage.Text);   //转成字节流
+        //       IPEndPoint remoteiep = new IPEndPoint(address, port);
+        //       sendUdpClient.Send(bytes, bytes.Length, remoteiep);
+
         #region 用户退出
         private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (client != null)
             {
                 sendMessage("Logout," + textBoxUserName.Text);
+                isNormalExit = true;
                 isExit = true;
+                for (int i = userList.Count - 1; i >= 0; i--)
+                {
+                    RemoveUser(userList[i]);
+                }
+                for (int i = myClientList.Count - 1; i >= 0; i--)
+                {
+                    RemoveUser(myClientList[i]);
+                }
+                myListener.Stop();
                 br.Close();
                 bw.Close();
                 client.Close();
             }
+        }
+
+
+        private void RemoveUser(User user)
+        {
+            userList.Remove(user);
+            user.Close();
         }
         #endregion
 
@@ -294,6 +389,7 @@ namespace Server
         }
         #endregion
 
+        
         
     }
 }
