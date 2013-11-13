@@ -107,8 +107,11 @@ namespace HttpDownload
         {
             for (int i = 0; i < threadNumber; i++)
             {
-                threads[i] = new Thread(d[i].Receive);
-                threads[i].Start();
+                if (!d[i].isFinish)
+                {
+                    threads[i] = new Thread(d[i].Receive);
+                    threads[i].Start();
+                }
             }
         }
 

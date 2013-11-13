@@ -6,3 +6,4 @@ F:\GitHub\workplace\NetWorkProgram\C#\HttpDownload\HttpDownload\obj\Debug\HttpDo
 F:\GitHub\workplace\NetWorkProgram\C#\HttpDownload\HttpDownload\obj\Debug\HttpDownload.csproj.GenerateResource.Cache
 F:\GitHub\workplace\NetWorkProgram\C#\HttpDownload\HttpDownload\obj\Debug\HttpDownload.exe
 F:\GitHub\workplace\NetWorkProgram\C#\HttpDownload\HttpDownload\obj\Debug\HttpDownload.pdb
+F:\GitHub\workplace\NetWorkProgram\C#\HttpDownload\HttpDownload\obj\Debug\HttpDownload.csprojResolveAssemblyReference.cache
