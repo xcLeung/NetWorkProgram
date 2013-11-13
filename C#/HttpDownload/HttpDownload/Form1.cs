@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -17,11 +18,13 @@ namespace HttpDownload
         public Form1()
         {
             InitializeComponent();
-            textBox1.Text = String.Format("http://localhost:2749/Download/song.mp3");
-            textBox2.Text = String.Format("downfile1.mp3");
+            textBox1.Text = String.Format("http://ww4.sinaimg.cn/bmiddle/641167cfjw1eahxnkppmqj20c80853yr.jpg");
+            textBox2.Text = String.Format("downfile1.jpg");
         }
 
-        public const int threadNumber = 3;
+        public const int threadNumber = 2;
+        HttpDownload[] d = new HttpDownload[threadNumber];
+        Thread[] threads = new Thread[threadNumber];
 
         private void btnDownload_Click(object sender, EventArgs e)
         {
@@ -51,7 +54,7 @@ namespace HttpDownload
                     request.Method = "Head";
                     HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                     fileSize = response.ContentLength;
-                    listBoxThreadStatus.Items.Add(String.Format("文件大小：{0}",Math.Ceiling(fileSize/ 1024.0f)+"KB")); //B单位
+                    listBoxThreadStatus.Items.Add(String.Format("文件大小：{0}KB----{1}B",Math.Ceiling(fileSize/ 1024.0f),fileSize)); //B单位
                     response.Close();
                 }
                 catch (Exception ex)
@@ -59,21 +62,53 @@ namespace HttpDownload
                     MessageBox.Show(ex.Message);
                 }
                 int downloadFileSize = (int)(fileSize / threadNumber); //每个线程下载文件的大小
-                HttpDownload[] d = new HttpDownload[threadNumber];
+                listBoxThreadStatus.Items.Add(String.Format("每个线程下载文件的大小：{0}B", downloadFileSize));
+                
 
                 for (int i = 0; i < threadNumber; i++)
                 {
                     d[i] = new HttpDownload(listBoxThreadStatus, i);
                     d[i].startPosition = i * downloadFileSize;
+                    d[i].downloadPosition = d[i].startPosition;
                     if (i < threadNumber - 1)
                     {
                         d[i].fileSize = downloadFileSize;
                     }
                     else
                     {
-                        d[i].fileSize = (int)(fileSize - downloadFileSize);
+                        d[i].fileSize = (int)(fileSize - downloadFileSize*(i-1)); //最后一个文件下载多点预留空间
                     }
+                    listBoxThreadStatus.Items.Add(String.Format("线程{0}下载文件大小：{1}B", i, d[i].fileSize));
+                    d[i].isFinish = false;
+                    d[i].sourceUrl = textBox1.Text;
+                    d[i].targetFileName = Path.GetFileNameWithoutExtension(fileName) + ".$$" + i;
                 }
+                
+                for (int i = 0; i < threadNumber; i++)
+                {
+                    threads[i] = new Thread(d[i].Receive);
+                    threads[i].Start();
+                }
+
+                CombineFiles c = new CombineFiles(listBoxThreadStatus, d, textBox2.Text);
+                Thread combineThread = new Thread(c.combine);
+                combineThread.Start();
+
+            }
+        }
+
+
+        /// <summary>
+        /// 继续下载
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnContinue_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < threadNumber; i++)
+            {
+                threads[i] = new Thread(d[i].Receive);
+                threads[i].Start();
             }
         }
 
@@ -84,9 +119,21 @@ namespace HttpDownload
         /// <param name="e"></param>
         private void btnPause_Click(object sender, EventArgs e)
         {
-
+            for (int i = 0; i < threadNumber; i++)
+            {
+                threads[i].Abort();
+            }
         }
 
+        /// <summary>
+        /// 退出
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+
+        }
         /// <summary>
         /// 判断资源是否存在
         /// </summary>
@@ -107,8 +154,6 @@ namespace HttpDownload
                 MessageBox.Show(ex.Message);
                 return false;
             }
-        }
-
-       
+        }    
     }
 }
