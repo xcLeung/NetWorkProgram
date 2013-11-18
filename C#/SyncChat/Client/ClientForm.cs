@@ -16,13 +16,14 @@ namespace Server
 {
     public partial class ClientForm : Form
     {
+        private TcpCommon tcpCommon = new TcpCommon();
+
         private bool isExit = false;
         private TcpClient client;
         private BinaryReader br;
         private BinaryWriter bw;
 
         private UdpClient receiveUdpClient;
-        private UdpClient sendUdpClient;
 
         private TcpListener myListener;
         private List<User> userList = new List<User>();
@@ -60,8 +61,6 @@ namespace Server
                 IPAddress[] ips = Dns.GetHostAddresses(Dns.GetHostName());
                 IPEndPoint udpiep = new IPEndPoint(ips[ips.Length-1], iep.Port);
                 receiveUdpClient = new UdpClient(udpiep);
-                //AddTalkMessage(receiveUdpClient.Client.LocalEndPoint.ToString());
-
                 AddTalkMessage("连接成功");
             }
             catch
@@ -200,14 +199,32 @@ namespace Server
         {
             User user = (User)objUser;
             TcpClient client = user.client;
-            while (isNormalExit == false)
+            while (true)
             {
                 String receiveString = string.Empty;
                 try
                 {
                     //消除边界第二种方法，包含字符串长度前缀
                     receiveString = user.br.ReadString();
-                    AddTalkMessage(String.Format("[{0}]对你说：{1}", client.Client.RemoteEndPoint.ToString(), receiveString));
+
+                    if (receiveString.ToLower() == "SendFile".ToLower())
+                    {
+                        receiveString = user.br.ReadString();
+                        String filePath= Path.Combine(Environment.CurrentDirectory,"receiveFile"+receiveString);
+                        AddTalkMessage(String.Format("开始接收文件，存放位置：{0}",filePath));
+                        if (ReceiveFile(filePath, client.GetStream()))
+                        {
+                            AddTalkMessage(String.Format("接收文件完毕！"));
+                        }
+                        else
+                        {
+                            AddTalkMessage(String.Format("接收文件失败！"));
+                        }
+                    }
+                    else
+                    {
+                        AddTalkMessage(String.Format("[{0}]对你说：{1}", client.Client.RemoteEndPoint.ToString(), receiveString));
+                    }
                 }
                 catch
                 {
@@ -267,6 +284,50 @@ namespace Server
                 MessageBox.Show("发送失败！");
             }
         }
+
+        /// <summary>
+        /// 发送文件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnSendFile_Click(object sender, EventArgs e)
+        {
+            if (listBoxOnlineStatus.SelectedIndex != -1)
+            {
+                String userName = listBoxOnlineStatus.SelectedItem.ToString().Split(',')[0];
+                String targetIPpoint = listBoxOnlineStatus.SelectedItem.ToString().Split(',')[1];  //取出对方ipendpoint
+                int port = 0;
+                splitIPEndPoint(targetIPpoint, ref port);
+                if (port == 0)
+                {
+                    MessageBox.Show("发送文件失败！");
+                    return;
+                }
+
+
+                TcpClient newClient = new TcpClient(Dns.GetHostName(), port);
+                User newUserClient = new User(newClient);
+                myClientList.Add(newUserClient);
+
+                sendToClient(newUserClient, "SendFile");
+                AddTalkMessage(String.Format("开始发送文件：{0}", txtFileName.Text));
+                sendToClient(newUserClient, txtFileName.Text.Substring(txtFileName.Text.LastIndexOf('.')));
+                if (SendFile(txtFileName.Text, newUserClient.client.GetStream()))
+                {
+                    AddTalkMessage(String.Format("发送文件完毕！"));
+                }
+                else
+                {
+                    AddTalkMessage(String.Format("传输文件失败"));
+                }
+                
+                textBoxMessage.Clear();
+            }
+            else
+            {
+                MessageBox.Show("请先在[当前在线]中选择一个对话者");
+            }
+        }
         #endregion
 
         #region C-C udp 通信
@@ -303,11 +364,16 @@ namespace Server
                     return;
                 }
 
-                sendUdpClient = new UdpClient(0);   //初始化udp
+                UdpClient sendUdpClient = new UdpClient(0);   //初始化udp
                 byte[] bytes = System.Text.Encoding.Unicode.GetBytes(textBoxMessage.Text);   //转成字节流
                 IPAddress[] ips = Dns.GetHostAddresses(Dns.GetHostName());
                 IPEndPoint remoteiep = new IPEndPoint(ips[ips.Length-1], port);
-                
+
+                //for (int i = 0; i < ips.Length; i++)
+                //{
+                //    MessageBox.Show(ips[i].ToString());
+                //}
+
                 sendUdpClient.Send(bytes, bytes.Length, remoteiep);
 
                 AddTalkMessage(String.Format("[UDP]我说：{0}", textBoxMessage.Text));
@@ -346,23 +412,23 @@ namespace Server
         #region 用户退出
         private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (client != null)
+            try
             {
-                sendMessage("Logout," + textBoxUserName.Text);
-                isNormalExit = true;
-                isExit = true;
-                for (int i = userList.Count - 1; i >= 0; i--)
+                if (client != null)
                 {
-                    RemoveUser(userList[i]);
-                }
-                for (int i = myClientList.Count - 1; i >= 0; i--)
-                {
-                    RemoveUser(myClientList[i]);
+                    sendMessage("Logout," + textBoxUserName.Text);
+                    isExit = true;
+                    br.Close();
+                    bw.Close();
+                    client.Close();
                 }
                 myListener.Stop();
-                br.Close();
-                bw.Close();
-                client.Close();
+                receiveUdpClient.Close();
+
+            }
+            catch
+            {
+                MessageBox.Show("退出异常！");
             }
         }
 
@@ -425,6 +491,40 @@ namespace Server
         }
         #endregion
 
-          
+        #region TcpCommon所有方法
+        public bool SendFile(String filePath,NetworkStream netstream)
+        {
+            return tcpCommon.SendFile(filePath, netstream);
+        }
+
+
+        public bool ReceiveFile(string filePath, NetworkStream netstream)
+        {
+            return tcpCommon.ReceiveFile(filePath, netstream);
+        }
+        #endregion
+
+
+        /// <summary>
+        /// 选择一个文件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnChooseFile_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fileDialog1 = new OpenFileDialog();
+            fileDialog1.InitialDirectory = "d://";
+            fileDialog1.FilterIndex = 1;
+            fileDialog1.RestoreDirectory = true;
+            if (fileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                 txtFileName.Text = fileDialog1.FileName;
+            }
+            else
+            {
+                txtFileName.Text = String.Empty;
+            } 
+        }
+        
     }
 }

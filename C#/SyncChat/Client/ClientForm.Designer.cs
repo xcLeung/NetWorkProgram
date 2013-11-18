@@ -34,12 +34,15 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.richTextBoxTalkInfo = new System.Windows.Forms.RichTextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnUdpSend = new System.Windows.Forms.Button();
             this.btnCC = new System.Windows.Forms.Button();
             this.btnSend = new System.Windows.Forms.Button();
             this.textBoxMessage = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.listBoxOnlineStatus = new System.Windows.Forms.ListBox();
-            this.btnUdpSend = new System.Windows.Forms.Button();
+            this.btnChooseFile = new System.Windows.Forms.Button();
+            this.btnSendFile = new System.Windows.Forms.Button();
+            this.txtFileName = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -74,7 +77,7 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.richTextBoxTalkInfo);
-            this.groupBox1.Location = new System.Drawing.Point(12, 37);
+            this.groupBox1.Location = new System.Drawing.Point(12, 78);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(432, 155);
             this.groupBox1.TabIndex = 3;
@@ -95,12 +98,22 @@
             this.groupBox2.Controls.Add(this.btnCC);
             this.groupBox2.Controls.Add(this.btnSend);
             this.groupBox2.Controls.Add(this.textBoxMessage);
-            this.groupBox2.Location = new System.Drawing.Point(12, 198);
+            this.groupBox2.Location = new System.Drawing.Point(12, 239);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(432, 122);
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "发送信息";
+            // 
+            // btnUdpSend
+            // 
+            this.btnUdpSend.Location = new System.Drawing.Point(344, 26);
+            this.btnUdpSend.Name = "btnUdpSend";
+            this.btnUdpSend.Size = new System.Drawing.Size(75, 23);
+            this.btnUdpSend.TabIndex = 3;
+            this.btnUdpSend.Text = "C-Cudp发送";
+            this.btnUdpSend.UseVisualStyleBackColor = true;
+            this.btnUdpSend.Click += new System.EventHandler(this.btnUdpSend_Click);
             // 
             // btnCC
             // 
@@ -135,7 +148,7 @@
             this.groupBox3.Controls.Add(this.listBoxOnlineStatus);
             this.groupBox3.Location = new System.Drawing.Point(450, 13);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(316, 307);
+            this.groupBox3.Size = new System.Drawing.Size(316, 348);
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "当前在线";
@@ -146,24 +159,44 @@
             this.listBoxOnlineStatus.ItemHeight = 12;
             this.listBoxOnlineStatus.Location = new System.Drawing.Point(6, 20);
             this.listBoxOnlineStatus.Name = "listBoxOnlineStatus";
-            this.listBoxOnlineStatus.Size = new System.Drawing.Size(304, 280);
+            this.listBoxOnlineStatus.Size = new System.Drawing.Size(304, 316);
             this.listBoxOnlineStatus.TabIndex = 0;
             // 
-            // btnUdpSend
+            // btnChooseFile
             // 
-            this.btnUdpSend.Location = new System.Drawing.Point(344, 26);
-            this.btnUdpSend.Name = "btnUdpSend";
-            this.btnUdpSend.Size = new System.Drawing.Size(75, 23);
-            this.btnUdpSend.TabIndex = 3;
-            this.btnUdpSend.Text = "C-Cudp发送";
-            this.btnUdpSend.UseVisualStyleBackColor = true;
-            this.btnUdpSend.Click += new System.EventHandler(this.btnUdpSend_Click);
+            this.btnChooseFile.Location = new System.Drawing.Point(15, 37);
+            this.btnChooseFile.Name = "btnChooseFile";
+            this.btnChooseFile.Size = new System.Drawing.Size(75, 23);
+            this.btnChooseFile.TabIndex = 6;
+            this.btnChooseFile.Text = "选择文件";
+            this.btnChooseFile.UseVisualStyleBackColor = true;
+            this.btnChooseFile.Click += new System.EventHandler(this.btnChooseFile_Click);
+            // 
+            // btnSendFile
+            // 
+            this.btnSendFile.Location = new System.Drawing.Point(325, 37);
+            this.btnSendFile.Name = "btnSendFile";
+            this.btnSendFile.Size = new System.Drawing.Size(75, 23);
+            this.btnSendFile.TabIndex = 7;
+            this.btnSendFile.Text = "发送文件";
+            this.btnSendFile.UseVisualStyleBackColor = true;
+            this.btnSendFile.Click += new System.EventHandler(this.btnSendFile_Click);
+            // 
+            // txtFileName
+            // 
+            this.txtFileName.Location = new System.Drawing.Point(96, 39);
+            this.txtFileName.Name = "txtFileName";
+            this.txtFileName.Size = new System.Drawing.Size(209, 21);
+            this.txtFileName.TabIndex = 8;
             // 
             // ClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(776, 332);
+            this.ClientSize = new System.Drawing.Size(776, 373);
+            this.Controls.Add(this.txtFileName);
+            this.Controls.Add(this.btnSendFile);
+            this.Controls.Add(this.btnChooseFile);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -196,6 +229,9 @@
         private System.Windows.Forms.ListBox listBoxOnlineStatus;
         private System.Windows.Forms.Button btnCC;
         private System.Windows.Forms.Button btnUdpSend;
+        private System.Windows.Forms.Button btnChooseFile;
+        private System.Windows.Forms.Button btnSendFile;
+        private System.Windows.Forms.TextBox txtFileName;
     }
 }
 
